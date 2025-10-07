@@ -1,0 +1,32 @@
+name: Autograding Tests
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npm install -D vitest
+
+    - name: Copy test file
+      run: |
+        curl -O https://github.com/200backflips/autograding-tests/blob/47f3244ff9044527f164cd59425a1bdbbcc96062/src/bootcamp--individuellt-prov.test.js
+
+    - name: Run tests
+      run: npx vitest run --reporter=verbose
